@@ -1,25 +1,20 @@
-from fastapi import Depends, FastAPI, HTTPException
+# TODO: 例外処理 ステータスコード
+from fastapi import Depends, FastAPI, HTTPException, status
 from sqlalchemy.orm import Session
 
 from . import models, schemas
 from .database import SessionLocal, engine
 
-# データベースを作成
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-
-# Dependency
 def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-# response_model
-# 400返す
+  db = SessionLocal()
+  try:
+    yield db
+  finally:
+    db.close()
 
 @app.post("/users")
 def create_user(user: schemas.User, db: Session = Depends(get_db)):
@@ -29,7 +24,39 @@ def create_user(user: schemas.User, db: Session = Depends(get_db)):
   db.refresh(new_user)
   return new_user
 
-# @app.get("/users/", response_model=list[schemas.User])
-# def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-#     users = crud.get_users(db, skip=skip, limit=limit)
-#     return users
+# @app.get("/users")
+# def all_fetch(db: Session = Depends(get_db)):
+#   users = db.query(models.User).all()
+#   return users
+
+# @app.get('/users/{id}')
+# def show(id: int, db: Session = Depends(get_db)):
+#   user = db.query(models.User).filter(models.User.id == id).first()
+#   return user
+
+# @app.delete('/users/{id}')
+# def delete(id: int, db: Session = Depends(get_db)):
+#   db.query(models.User).filter(models.User.id == id).delete(synchronize_session=False)
+#   db.commit()
+#   return {"message": "ok"}
+
+@app.get("/users")
+def all_fetch(db: Session = Depends(get_db)):
+  users = db.query(models.User).all()
+  return users
+
+@app.get('/users/{id}')
+def show(id: int, db: Session = Depends(get_db)):
+  user = db.query(models.User).filter(models.User.id == id).first()
+  if not user:
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+  return user
+
+@app.delete('/users/{id}')
+def delete(id: int, db: Session = Depends(get_db)):
+  user = db.query(models.User).filter(models.User.id == id)
+  if not user.first():
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'id={id} is not found')
+  user.delete(synchronize_session=False)
+  db.commit()
+  return {"message": "ok"}
