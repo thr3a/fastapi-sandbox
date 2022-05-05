@@ -1,4 +1,3 @@
-# TODO: 例外処理 ステータスコード
 from fastapi import Depends, FastAPI, HTTPException, status
 from sqlalchemy.orm import Session
 

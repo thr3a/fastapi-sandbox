@@ -1,4 +1,3 @@
-# TODO: 例外処理 ステータスコード
 from typing import List
 from fastapi import Depends, FastAPI, HTTPException, status
 from sqlalchemy.orm import Session
@@ -46,11 +45,11 @@ def delete(id: int, db: Session = Depends(get_db)):
   db.commit()
   return {"message": "ok"}
 
-@app.put("/users/{id}")
+@app.put("/users/{id}", response_model=schemas.ShowUser)
 def update(id: int, request: schemas.UpdateUser, db: Session = Depends(get_db)):
   user = db.query(models.User).filter(models.User.id == id)
   if not user.first():
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'id={id} is not found')
-  user.update(request)
+  user.update(request.dict())
   db.commit()
-  return {"message": "ok"}
+  return user.first()

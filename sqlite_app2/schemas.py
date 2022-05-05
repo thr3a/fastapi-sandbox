@@ -13,7 +13,6 @@ class UpdateUser(BaseModel):
   class Config:
     orm_mode = True
 
-
 class ShowUser(BaseModel):
   id: int
   email: str
