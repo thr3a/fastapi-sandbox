@@ -1,3 +1,4 @@
+from typing import List
 from pydantic import BaseModel
 
 class User(BaseModel):
@@ -7,17 +8,23 @@ class User(BaseModel):
   class Config:
     orm_mode = True
 
-class UpdateUser(BaseModel):
-  email: str
-  password: str
+class Post(BaseModel):
+  title: str
+  body: str
   class Config:
     orm_mode = True
 
 class ShowUser(BaseModel):
   id: int
   email: str
-
-  # NOTE: これしないとvalue is not a valid dict (type=type_error.dict)になる
+  posts: List[Post] = []
   class Config:
     orm_mode = True
 
+class ShowPost(BaseModel):
+  title: str
+  body: str
+  creator: ShowUser
+
+  class Config:
+    orm_mode = True
