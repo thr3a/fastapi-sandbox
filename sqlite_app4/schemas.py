@@ -21,6 +21,7 @@ class ShowUser(BaseModel):
     orm_mode = True
 
 class ShowPost(BaseModel):
+  id: int
   title: str
   body: str
   class Config:

@@ -1,7 +1,9 @@
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from .. import schemas, models, database
+from .. import schemas, database
+from ..functions import post
+
 router = APIRouter(
   prefix="/posts",
   tags=["posts"]
@@ -9,20 +11,12 @@ router = APIRouter(
 
 @router.post("/")
 def create_post(request: schemas.CreatePost, db: Session = Depends(database.get_db)):
-  new_post = models.Post(**request.dict())
-  db.add(new_post)
-  db.commit()
-  db.refresh(new_post)
-  return new_post
+  return post.create(request, db)
 
 @router.get("/", response_model=List[schemas.ShowPostWithUser])
-def all_fetch(db: Session = Depends(database.get_db)):
-  posts = db.query(models.Post).all()
-  return posts
+def get_all(db: Session = Depends(database.get_db)):
+  return post.get_all(db)
 
 @router.get('/{id}', response_model=schemas.ShowPostWithUser)
 def show(id: int, db: Session = Depends(database.get_db)):
-  post = db.query(models.Post).filter(models.Post.id == id).first()
-  if not post:
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-  return post
+  return post.get(id, db)
