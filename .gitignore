@@ -1,2 +1,2 @@
 __pycache__
-sql_app.sqlite
+*.sqlite
