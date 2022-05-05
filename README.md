@@ -18,5 +18,5 @@ http://127.0.0.1:3000/
     - showのときにパスワード表示しないように
   - Postモデル作成
   - usersに多数のpostsがぶら下がっている関係(relationship)
-- sqlite_app3:
-  - routesディレクトリで切り出しリファクタリング
+- sqlite_app3: routesディレクトリで切り出しリファクタリング
+- sqlite_app4: functionsディレクトリで切り出しリファクタリング
