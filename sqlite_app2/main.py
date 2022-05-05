@@ -1,13 +1,10 @@
 from typing import List
 from fastapi import Depends, FastAPI, HTTPException, status
 from sqlalchemy.orm import Session
-from passlib.context import CryptContext
 from . import models, schemas
 from .database import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
-
-pwd_cxt = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 app = FastAPI()
 
@@ -20,7 +17,7 @@ def get_db():
 
 @app.post("/users", response_model=schemas.ShowUser)
 def create_user(request: schemas.User, db: Session = Depends(get_db)):
-  hashedPassword = pwd_cxt.hash(request.password)
+  hashedPassword = request.password + 'hogehoge'
   new_user = models.User(email=request.email, password=hashedPassword)
   db.add(new_user)
   db.commit()

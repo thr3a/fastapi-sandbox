@@ -15,5 +15,6 @@ http://127.0.0.1:3000/
 - sqlite_app1: SQLiteでUserの必要最低限のCRUD
 - sqlite_app2:
   - レスポンスモデルの導入 schemas.pyが拡張されてる
-  - パスワードハッシュ
+    - showのときにパスワード表示しないように
   - Postモデル作成
+  - usersに多数のpostsがぶら下がっている関係(relationship)
