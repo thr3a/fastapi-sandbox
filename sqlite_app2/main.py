@@ -1,4 +1,5 @@
 # TODO: 例外処理 ステータスコード
+from typing import List
 from fastapi import Depends, FastAPI, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -24,27 +25,18 @@ def create_user(user: schemas.User, db: Session = Depends(get_db)):
   db.refresh(new_user)
   return new_user
 
-@app.get("/users")
+@app.get("/users", response_model=List[schemas.ShowUser])
 def all_fetch(db: Session = Depends(get_db)):
   users = db.query(models.User).all()
   return users
 
-# @app.get('/users/{id}')
-# def show(id: int, db: Session = Depends(get_db)):
-#   user = db.query(models.User).filter(models.User.id == id).first()
-#   return user
-@app.get('/users/{id}')
+@app.get('/users/{id}', response_model=schemas.ShowUser)
 def show(id: int, db: Session = Depends(get_db)):
   user = db.query(models.User).filter(models.User.id == id).first()
   if not user:
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
   return user
 
-# @app.delete('/users/{id}')
-# def delete(id: int, db: Session = Depends(get_db)):
-#   db.query(models.User).filter(models.User.id == id).delete(synchronize_session=False)
-#   db.commit()
-#   return {"message": "ok"}
 @app.delete('/users/{id}')
 def delete(id: int, db: Session = Depends(get_db)):
   user = db.query(models.User).filter(models.User.id == id)
@@ -55,7 +47,10 @@ def delete(id: int, db: Session = Depends(get_db)):
   return {"message": "ok"}
 
 @app.put("/users/{id}")
-def update(id: int, request: schemas.User, db: Session = Depends(get_db)):
-  db.query(models.User).filter(models.User.id == id).update(dict(request))
+def update(id: int, request: schemas.UpdateUser, db: Session = Depends(get_db)):
+  user = db.query(models.User).filter(models.User.id == id)
+  if not user.first():
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'id={id} is not found')
+  user.update(request)
   db.commit()
   return {"message": "ok"}
