@@ -10,7 +10,7 @@ http://127.0.0.1:3000/
 
 # 階層別
 
-- hello_world: hellow worldするだけ
+- hello_world: hello worldするだけ
 - no_database: pydanticのサンプル つまりpydanticはDBに一切関わりはない
 - sqlite_app1: SQLiteでUserの必要最低限のCRUD
 - sqlite_app2:
